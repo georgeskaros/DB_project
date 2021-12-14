@@ -1,0 +1,16 @@
+CREATE TABLE white
+(fixed_acidity real,
+ volatile_acidity real,
+ citric_acid real,
+ residual_sugar real,
+ chlorides real,
+ free_sulfur_dioxide real,
+ total_sulfur_dioxide real,
+ density real,
+ pH real,
+ sulphates real,
+ alcohol real,
+ quality int)
+
+    
+    

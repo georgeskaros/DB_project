@@ -1,0 +1,88 @@
+2(a)
+	SELECT a.name, b.count_drug
+	FROM drugs as a , 
+		((SELECT drug_id , COUNT(drug_id) as count_drug 
+		FROM medical_folder
+		GROUP BY drug_id
+		ORDER BY COUNT(drug_id) DESC
+		limit 1)
+		UNION
+		(SELECT drug_id , COUNT(drug_id)  
+		FROM medical_folder
+		GROUP BY drug_id
+		ORDER BY COUNT(drug_id) 
+		limit 1)) as b
+	WHERE a.id=b.drug_id
+2(b) 
+SELECT diagnosis
+	FROM appointments
+	WHERE t > 
+	(SELECT max(t)
+	FROM appointments)-interval'7 days'
+	AND diagnosis is not null
+	ORDER BY 1
+2(c)
+SELECT doctoramka, patientamka, t
+FROM Appointments
+WHERE t > 
+	(select max(t)
+	from appointments)-interval'1 month'
+And doctoramka='30400751029246';
+
+
+2(d)
+SELECT patientamka, count(doctoramka) 
+FROM	(SELECT DISTINCT  patientamka, doctoramka 
+	FROM appointments
+	WHERE diagnosis is not null
+	order by 1 )AS A
+GROUP BY patientamka
+HAVING count(doctoramka) > 1	
+ORDER BY COUNT(doctoramka);
+
+2(e)
+SELECT id , name, count(patientamka) AS unique_patients
+FROM(	SELECT departments.id ,departments.name ,appointments.patientamka ,count(*)
+	FROM appointments
+	INNER JOIN doctor ON appointments.doctoramka=doctor.doctoramka
+	INNER JOIN departments ON doctor.speciality=departments.id
+	GROUP BY departments.id ,departments.name ,appointments.patientamka 
+	ORDER BY 1 ) as b
+GROUP BY id, name
+ORDER BY 3 DESC 
+LIMIT 1
+
+
+
+
+2(f)
+select id , name , nonull::float/ withnull as avr_per_dep
+from 
+	(SELECT id , name, count(patientamka) AS nonull
+	FROM(	SELECT departments.id ,departments.name ,appointments.patientamka ,count(*)
+		FROM appointments
+		INNER JOIN doctor ON appointments.doctoramka=doctor.doctoramka
+		INNER JOIN departments ON doctor.speciality=departments.id
+		WHERE appointments.diagnosis is not NULL
+		GROUP BY departments.id ,departments.name ,appointments.patientamka 
+		ORDER BY 1 ) AS A
+	GROUP BY id, name
+	ORDER BY 1  )AS A
+INNER JOIN 	
+	(SELECT id , name, count(patientamka) AS withnull
+	FROM(	SELECT departments.id ,departments.name ,appointments.patientamka ,count(*)
+		FROM appointments
+		INNER JOIN doctor ON appointments.doctoramka=doctor.doctoramka
+		INNER JOIN departments ON doctor.speciality=departments.id
+		GROUP BY departments.id ,departments.name ,appointments.patientamka 
+		ORDER BY 1 ) AS B
+	GROUP BY id, name
+	ORDER BY 1  ) AS B USING (id,name);
+
+
+
+
+
+
+
+

@@ -1,0 +1,50 @@
+CREATE TABLE DEPARTMENTS (
+    id serial NOT NULL,
+    name varchar(35),
+    PRIMARY KEY (id)
+);
+CREATE TABLE DRUGS (
+    id serial NOT NULL,
+    name text,
+    description text,
+    PRIMARY KEY (id)
+);
+CREATE TYPE genderType AS ENUM ('Male', 'Female' );
+CREATE TABLE PATIENT (
+    patientAMKA varchar(40) NOT NULL,
+    userid varchar(45),
+    password varchar(20),
+    name varchar(20),
+    surname varchar(20),
+    gender genderType,
+    PRIMARY KEY (patientAMKA)
+);
+CREATE TABLE DOCTOR (
+    doctorAMKA varchar(40) NOT NULL,
+    username varchar(45),
+    password varchar(20),
+    name varchar(20),
+    surname varchar(20),
+    speciality smallint,
+    PRIMARY KEY (doctorAMKA),
+    FOREIGN KEY (speciality) REFERENCES DEPARTMENTS(id)
+);
+CREATE TABLE MEDIACL_FOLDER (
+    id integer NOT NULL,
+    patient varchar(40),
+    cure text,
+    drug_id integer,
+    PRIMARY KEY (id),
+    FOREIGN KEY (patient) REFERENCES PATIENT(patientAMKA),
+    FOREIGN KEY (drug_id) REFERENCES DRUGS(id)
+);
+CREATE TABLE APPOINTMENTS (
+    id integer NOT NULL,
+    t timestamp ,
+    patientAMKA varchar(40),
+    doctorAMKA varchar(40),
+    diagnosis varchar(20),
+    PRIMARY KEY (id),
+    FOREIGN KEY (patientAMKA) REFERENCES PATIENT(patientAMKA),
+    FOREIGN KEY (doctorAMKA) REFERENCES DOCTOR(doctorAMKA)
+);

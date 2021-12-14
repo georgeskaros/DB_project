@@ -1,0 +1,45 @@
+3(a)
+CREATE OR REPlACE FUNCTION medical_folder_update() RETURNS trigger AS 
+$$
+DECLARE oldId integer;
+BEGIN
+	IF (new.diagnosis)is not null then
+		SELECT id INTO oldId FROM  medical_folder ORDER BY 1 DESC LIMIT 1;
+		INSERT INTO medical_folder(id,patient,cure,drug_id)
+		VALUES(oldId+1,new.patientamka,new.diagnosis,null);
+		RETURN new;
+	END IF;
+	END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER mdupdate AFTER INSERT ON appointments
+FOR EACH ROW EXECUTE PROCEDURE medical_folder_update();
+
+INSERT INTO appointments (id,t,patientamka,doctoramka,diagnosis) VALUES
+    ('28013', null, '3568345415910816', '201976947992697', 'lick');
+
+
+3(b)
+create or replace function get_appointments() returns setof appointments
+ language plpgsql as $$
+declare 
+  x appointments%rowtype;
+  appointments_cursor cursor for SELECT  id,t,patientamka,doctoramka,diagnosis
+	FROM appointments
+	WHERE t > 
+	(SELECT max(t)
+	FROM appointments)-interval'7 days'
+	AND diagnosis is not null
+	ORDER BY 5;
+
+begin
+ open appointments_cursor;
+    fetch appointments_cursor into x;
+    CLOSE appointments_cursor;
+    for x in appointments_cursor loop
+     RETURN NEXT X;
+    END LOOP;
+end $$;
+
+
+select diagnosis from get_appointments();

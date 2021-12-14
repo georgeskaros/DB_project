@@ -1,0 +1,41 @@
+﻿CREATE TABLE APPOINTMENTS (
+    id serial NOT NULL,
+    t timestamp ,
+    patientUSERNAME varchar(40),
+    doctorUSERNAME varchar(40),
+    PRIMARY KEY (id),
+    FOREIGN KEY (patientUSERNAME) REFERENCES PATIENT(username),
+    FOREIGN KEY (doctorUSERNAME) REFERENCES DOCTOR(username)
+);
+
+
+CREATE TABLE doctor (
+username varchar(40),
+hash text,
+salt text,
+name varchar(40),
+surname varchar(40),
+specialty int,
+PRIMARY KEY (username),
+foreign key (specialty) references departments(id));
+
+CREATE TABLE patient (
+username varchar(40),
+hash text,
+salt text,
+name varchar(40),
+surname varchar(40),
+PRIMARY KEY (username));
+
+CREATE TABLE admin (
+username varchar(40),
+hash text,
+salt text,
+name varchar(40),
+surname varchar(40),
+PRIMARY KEY (username));
+
+CREATE TABLE departments (
+id serial,
+name varchar(40),
+PRIMARY KEY (id));
